@@ -1,0 +1,2558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Data Eater | A Digital Horror Story About Surveillance Capitalism</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="An interactive critical design project exploring surveillance capitalism. Experience how websites collect your data in real-time through a horror-inspired narrative.">
+    <meta name="keywords" content="surveillance capitalism, data privacy, critical design, digital rights, GDPR, cookie consent, data collection, web tracking">
+    <meta name="author" content="Internet Inequalities Module 2026">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="The Data Eater | A Digital Horror Story">
+    <meta property="og:description" content="I just discovered how much data websites collect about me. The Data Eater showed me the ugly truth of surveillance capitalism.">
+    <meta property="og:image" content="https://via.placeholder.com/1200x630/0a0a0a/ff0064?text=THE+DATA+EATER">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="The Data Eater">
+    <meta name="twitter:description" content="An interactive horror story about surveillance capitalism">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🍪</text></svg>">
+    
+    <!-- Preload critical fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            transition: background 0.8s ease;
+        }
+
+        body.stage-0,
+        body.stage-1,
+        body.stage-2 {
+            background: linear-gradient(135deg, #fef5f8 0%, #f0e8f5 50%, #e8f5fa 100%);
+        }
+
+        .cyber-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, rgba(255,0,100,0.1) 1px, transparent 1px),
+                linear-gradient(rgba(255,0,100,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        body.stage-0 .cyber-bg,
+        body.stage-1 .cyber-bg,
+        body.stage-2 .cyber-bg {
+            opacity: 0;
+        }
+
+        body.stage-3 .cyber-bg,
+        body.stage-4 .cyber-bg,
+        body.stage-5 .cyber-bg,
+        body.stage-6 .cyber-bg,
+        body.stage-7 .cyber-bg,
+        body.stage-8 .cyber-bg {
+            opacity: 0.3;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 90%;
+            max-width: 900px;
+            margin: 50px auto;
+            background: rgba(20, 20, 30, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 0 50px rgba(255, 0, 100, 0.3),
+                        0 0 100px rgba(0, 255, 255, 0.2);
+            border: 2px solid rgba(255, 0, 100, 0.3);
+        }
+
+        .glitch {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3em;
+            font-weight: 900;
+            text-align: center;
+            color: #fff;
+            text-transform: uppercase;
+            position: relative;
+            text-shadow: 
+                0 0 10px rgba(255, 0, 100, 0.8),
+                0 0 20px rgba(255, 0, 100, 0.6),
+                0 0 30px rgba(255, 0, 100, 0.4);
+            animation: glitchText 3s infinite;
+        }
+
+        @keyframes glitchText {
+            0%, 90%, 100% { transform: translateX(0); }
+            92% { transform: translateX(-5px); }
+            94% { transform: translateX(5px); }
+            96% { transform: translateX(-5px); }
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            color: #0ff;
+            margin-top: 10px;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .stage {
+            display: none;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .stage.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Monster Container */
+        .monster-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+            min-height: 300px;
+            position: relative;
+        }
+
+        .monster {
+            width: 200px;
+            height: 200px;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 0 20px rgba(255, 105, 180, 0.6));
+            cursor: pointer;
+            transform-origin: center;
+        }
+
+        .monster:hover {
+            transform: scale(1.05);
+        }
+
+        .monster:active {
+            transform: scale(0.95);
+        }
+
+        .monster.eating {
+            animation: monsterEat 0.6s ease-in-out infinite;
+        }
+
+        @keyframes monsterEat {
+            0%, 100% { transform: scale(var(--monster-scale, 1)) rotate(0deg); }
+            25% { transform: scale(calc(var(--monster-scale, 1) * 1.1)) rotate(-5deg); }
+            75% { transform: scale(calc(var(--monster-scale, 1) * 1.1)) rotate(5deg); }
+        }
+
+        .monster.growing {
+            animation: monsterGrowPulse 0.5s ease-in-out;
+        }
+
+        @keyframes monsterGrowPulse {
+            0% { transform: scale(var(--monster-scale, 1)); }
+            50% { transform: scale(calc(var(--monster-scale, 1) * 1.2)); }
+            100% { transform: scale(var(--monster-scale, 1)); }
+        }
+
+        .monster.giant {
+            transform: scale(1.8);
+            animation: monsterShake 1.5s ease-in-out infinite;
+            filter: drop-shadow(0 0 60px rgba(255, 0, 100, 1)) 
+                    drop-shadow(0 0 80px rgba(255, 0, 0, 0.8));
+        }
+
+        @keyframes monsterShake {
+            0%, 100% { transform: scale(1.8) translateX(0) rotate(-2deg); }
+            25% { transform: scale(1.9) translateX(-10px) rotate(2deg); }
+            75% { transform: scale(1.9) translateX(10px) rotate(-2deg); }
+        }
+
+        /* Click counter display */
+        .click-counter {
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            color: #ff69b4;
+            font-size: 1.2em;
+            margin-top: 10px;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.8);
+        }
+
+        /* Sound toggle button */
+        .sound-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 0, 100, 0.3);
+            border: 2px solid rgba(255, 0, 100, 0.6);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .sound-toggle:hover {
+            background: rgba(255, 0, 100, 0.5);
+            transform: scale(1.05);
+        }
+
+        .cyber-button {
+            background: linear-gradient(45deg, #ff0064, #00ffff);
+            color: #fff;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(255, 0, 100, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .cyber-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(255, 0, 100, 0.8);
+        }
+
+        .cyber-button:active {
+            transform: translateY(0);
+        }
+
+        .message-box {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #ff0064;
+            margin: 20px 0;
+            box-shadow: 0 0 20px rgba(255, 0, 100, 0.4);
+        }
+
+        .message-box h3 {
+            color: #0ff;
+            margin-bottom: 15px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .message-box p {
+            line-height: 1.8;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+
+        .data-item {
+            background: rgba(255, 0, 100, 0.1);
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ff0064;
+            animation: slideInLeft 0.5s ease;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ff0064;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5em;
+            color: #0ff;
+            font-weight: 900;
+        }
+
+        .stat-label {
+            color: #aaa;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        /* Cookie Popup */
+        .cookie-popup {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(20, 20, 30, 0.98);
+            border-top: 3px solid #ff0064;
+            padding: 25px;
+            z-index: 999;
+            animation: slideUp 0.6s ease;
+            box-shadow: 0 -5px 30px rgba(255, 0, 100, 0.5);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .cookie-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-accept {
+            background: linear-gradient(45deg, #0f0, #0ff);
+            color: #000;
+            flex: 1;
+        }
+
+        .btn-reject {
+            background: linear-gradient(45deg, #f00, #f0f);
+            color: #fff;
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+                margin: 20px auto;
+            }
+            
+            .glitch {
+                font-size: 2em;
+            }
+            
+            .monster {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .monster.giant {
+                transform: scale(1.5);
+            }
+
+            .realtime-counter {
+                font-size: 0.9em;
+                padding: 10px 15px;
+                top: 15px;
+            }
+
+            .sale-notification {
+                font-size: 0.85em;
+                max-width: 280px;
+                right: 10px;
+                top: 70px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .share-buttons {
+                flex-direction: column;
+            }
+
+            .share-btn {
+                width: 100%;
+            }
+
+            /* Mobile touch feedback */
+            .cyber-button:active {
+                transform: scale(0.95);
+            }
+
+            .monster:active {
+                transform: scale(0.9);
+            }
+
+            * {
+                -webkit-tap-highlight-color: rgba(255, 0, 100, 0.3);
+            }
+        }
+
+        /* Cookie emoji animation */
+        .cookie-emoji {
+            position: fixed;
+            font-size: 3em;
+            pointer-events: none;
+            z-index: 9999;
+            animation: cookieFly 2s ease-out forwards;
+            filter: drop-shadow(0 0 10px rgba(255, 200, 100, 0.8));
+        }
+
+        @keyframes cookieFly {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-100px) rotate(180deg) scale(1.5);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-300px) rotate(360deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 40px rgba(255, 0, 0, 0.8);
+            }
+        }
+
+        /* Cookie Management Overlay */
+        .cookie-management {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: none;
+            overflow-y: auto;
+        }
+
+        .cookie-management.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .management-header {
+            position: sticky;
+            top: 0;
+            background: rgba(20, 20, 30, 0.98);
+            padding: 20px;
+            border-bottom: 2px solid #ff0064;
+            z-index: 10001;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .management-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .vendor-category {
+            background: rgba(20, 20, 30, 0.8);
+            border: 1px solid #666;
+            border-radius: 10px;
+            margin: 20px 0;
+            padding: 20px;
+        }
+
+        .vendor-item {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 3px solid #ff0064;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .vendor-info {
+            flex: 1;
+        }
+
+        .vendor-name {
+            color: #0ff;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .vendor-purposes {
+            color: #888;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        .legitimate-interest {
+            color: #f90;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #666;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.on {
+            background: #0f0;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.on::after {
+            transform: translateX(26px);
+        }
+
+        .toggle-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .scroll-counter {
+            position: fixed;
+            top: 200px;
+            right: 20px;
+            background: rgba(255, 0, 100, 0.9);
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2em;
+            color: #fff;
+            z-index: 10002;
+            box-shadow: 0 0 20px rgba(255, 0, 100, 0.8);
+        }
+
+        .infinite-scroll-warning {
+            text-align: center;
+            padding: 30px;
+            color: #f00;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2em;
+            animation: glitchText 2s infinite;
+        }
+
+        /* Data collection visual effects */
+        .data-stream {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        body.stage-3 .data-stream {
+            opacity: 0.3;
+        }
+
+        .data-particle {
+            position: absolute;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            animation: fall linear infinite;
+            text-shadow: 0 0 5px #0f0;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        .glitch-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 4;
+            opacity: 0;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(255, 0, 100, 0.1) 50%, 
+                transparent 100%);
+            animation: scanline 0.5s linear infinite;
+        }
+
+        body.stage-3 .glitch-overlay,
+        body.stage-4 .glitch-overlay {
+            opacity: 1;
+        }
+
+        @keyframes scanline {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        /* Real-time data counter */
+        .realtime-counter {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.9);
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3em;
+            color: #fff;
+            z-index: 1000;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+            display: none;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        body.stage-3 .realtime-counter {
+            display: block;
+        }
+
+        /* Data selling notifications */
+        .sale-notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(0, 255, 0, 0.95);
+            color: #000;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95em;
+            z-index: 1001;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+            animation: slideInRight 0.5s ease, fadeOut 0.5s ease 2.5s forwards;
+            max-width: 350px;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(400px);
+            }
+        }
+
+        .sale-notification .sale-item {
+            color: #000;
+            font-weight: bold;
+        }
+
+        .sale-notification .sale-company {
+            color: #f00;
+            font-weight: bold;
+        }
+
+        .sale-notification .sale-price {
+            color: #0a0;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        /* Time wasted counter */
+        .time-wasted {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #f00;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .time-wasted .time-big {
+            font-size: 2em;
+            color: #f00;
+            font-weight: bold;
+        }
+
+        /* Compare stats */
+        .compare-box {
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid #0ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        /* Share buttons */
+        .share-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            background: rgba(0, 255, 255, 0.2);
+            border: 2px solid #0ff;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .share-btn:hover {
+            background: rgba(0, 255, 255, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.5);
+        }
+
+        /* God mode explosion */
+        .explosion {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5em;
+            z-index: 10000;
+            animation: explode 1s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(5);
+                opacity: 0;
+            }
+        }
+
+        /* Loading screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2em;
+            color: #0ff;
+            margin-bottom: 30px;
+            animation: glitchText 2s infinite;
+        }
+
+        .loading-bar {
+            width: 300px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #f0f, #0ff);
+            width: 0%;
+            animation: loadProgress 2s ease-out forwards;
+        }
+
+        @keyframes loadProgress {
+            to { width: 100%; }
+        }
+
+        /* Enhanced monster hover effects */
+        .monster {
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .monster:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 30px rgba(255, 105, 180, 1));
+        }
+
+        /* Parallax scrolling effect */
+        @media (min-width: 769px) {
+            .cyber-bg {
+                background-attachment: fixed;
+            }
+        }
+
+        /* Enhanced data item animations */
+        .data-item {
+            animation: slideInLeft 0.5s ease, glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(255, 0, 100, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(255, 0, 100, 0.6);
+            }
+        }
+
+        /* Screen shake effect */
+        @keyframes screenShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        body.shake {
+            animation: screenShake 0.5s ease;
+        }
+
+        /* Tooltip system */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #0ff;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            border: 1px solid #0ff;
+            z-index: 1000;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* Enhanced button effects */
+        .cyber-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cyber-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .cyber-button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Webcam request popup */
+        .camera-request {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(20, 20, 30, 0.98);
+            border: 3px solid #f00;
+            padding: 30px;
+            border-radius: 15px;
+            z-index: 10000;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.8);
+            display: none;
+            min-width: 400px;
+        }
+
+        .camera-request.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">⚠️ INITIALIZING DATA EXTRACTION ⚠️</div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+        <p style="color: #888; margin-top: 20px; font-size: 0.9em;">Preparing surveillance systems...</p>
+    </div>
+
+    <div class="cyber-bg"></div>
+    <div class="data-stream" id="dataStream"></div>
+    <div class="glitch-overlay"></div>
+    
+    <!-- Real-time data counter -->
+    <div class="realtime-counter" id="realtimeCounter">
+        📊 Data Points: <span id="realtimeCount">0</span> | Companies: <span id="realtimeCompanies">0</span>
+    </div>
+    
+    <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">
+        🔊 SOUND ON
+    </button>
+    
+    <div class="container">
+        <h1 class="glitch">THE DATA EATER</h1>
+        <p class="subtitle">A Digital Horror Story</p>
+
+        <!-- Stage 0: Intro -->
+        <div class="stage active" id="stage0">
+            <div class="monster-container">
+                <!-- Sevimli başlangıç canavarı -->
+                <svg class="monster tooltip" id="monsterIntro" onclick="clickMonster()" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" data-tooltip="Click me! I'm hungry! 🍪">
+                    <!-- Body - Pembe ve sevimli -->
+                    <ellipse cx="100" cy="120" rx="70" ry="60" fill="#ff69b4" opacity="0.95"/>
+                    
+                    <!-- Büyük ve parlak gözler -->
+                    <g class="eye">
+                        <circle cx="75" cy="100" r="20" fill="#fff"/>
+                        <circle cx="75" cy="100" r="12" fill="#000"/>
+                        <circle cx="78" cy="96" r="5" fill="#fff"/>
+                    </g>
+                    <g class="eye">
+                        <circle cx="125" cy="100" r="20" fill="#fff"/>
+                        <circle cx="125" cy="100" r="12" fill="#000"/>
+                        <circle cx="128" cy="96" r="5" fill="#fff"/>
+                    </g>
+                    
+                    <!-- Gülümseyen ağız -->
+                    <path d="M 70 135 Q 100 150 130 135" stroke="#ff1493" stroke-width="3" fill="none"/>
+                    
+                    <!-- Küçük sevimli dişler -->
+                    <polygon points="90,138 92,143 94,138" fill="#fff"/>
+                    <polygon points="106,138 108,143 110,138" fill="#fff"/>
+                    
+                    <!-- Minik boynuzlar -->
+                    <circle cx="65" cy="85" r="8" fill="#ff69b4" opacity="0.9"/>
+                    <circle cx="135" cy="85" r="8" fill="#ff69b4" opacity="0.9"/>
+                    
+                    <!-- Allık -->
+                    <circle cx="55" cy="115" r="10" fill="#ff1493" opacity="0.3"/>
+                    <circle cx="145" cy="115" r="10" fill="#ff1493" opacity="0.3"/>
+                </svg>
+            </div>
+            <div class="click-counter" id="clickCounter">Click me! 🎀</div>
+            <h2 style="text-align: center; margin: 20px 0; color: #0ff;">Meet Your Friendly Data Companion!</h2>
+            <p style="text-align: center; color: #aaa; margin-bottom: 15px; font-size: 1.1em;">
+                I'm here to make your browsing experience wonderful...*
+            </p>
+            <p style="text-align: center; font-size: 0.85em; color: #666; margin-bottom: 20px;">
+                *By collecting every piece of information about you
+            </p>
+            
+            <!-- Info box -->
+            <div style="background: rgba(0, 255, 255, 0.1); border: 1px solid #0ff; border-radius: 10px; padding: 20px; margin: 20px 0;">
+                <p style="color: #0ff; text-align: center; font-size: 0.95em; line-height: 1.6;">
+                    ⚠️ This is an <strong>interactive critical design project</strong> that demonstrates surveillance capitalism.<br>
+                    <span style="color: #888;">Your real device data will be collected to show you how tracking works.</span>
+                </p>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="cyber-button" onclick="nextStage(1)">ENTER SITE</button>
+            </div>
+        </div>
+
+        <!-- Stage 1: Normal browsing -->
+        <div class="stage" id="stage1">
+            <div class="monster-container">
+                <svg class="monster" id="monsterStage1" onclick="clickMonster()" viewBox="0 0 200 200">
+                    <ellipse cx="100" cy="120" rx="70" ry="60" fill="#ff69b4"/>
+                    <circle cx="75" cy="100" r="18" fill="#fff"/>
+                    <circle cx="125" cy="100" r="18" fill="#fff"/>
+                    <circle cx="75" cy="100" r="10" fill="#000"/>
+                    <circle cx="125" cy="100" r="10" fill="#000"/>
+                    <path d="M 70 135 Q 100 145 130 135" stroke="#000" stroke-width="2" fill="none"/>
+                </svg>
+            </div>
+            <div class="click-counter" id="clickCounter1">Clicks: 0 ✨</div>
+            <h2 style="text-align: center; color: #0ff; margin-bottom: 25px;">Browse Freely!</h2>
+            <div style="background: rgba(0, 0, 0, 0.6); padding: 25px; border-radius: 12px; border: 1px solid #666;">
+                <h3 style="color: #0ff; margin-bottom: 15px;">📰 Latest Articles:</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 10px; margin: 8px 0; background: rgba(255, 0, 100, 0.1); border-radius: 5px;">
+                        ✨ How to Protect Your Privacy Online
+                    </li>
+                    <li style="padding: 10px; margin: 8px 0; background: rgba(255, 0, 100, 0.1); border-radius: 5px;">
+                        ✨ Top VPN Services of 2025
+                    </li>
+                    <li style="padding: 10px; margin: 8px 0; background: rgba(255, 0, 100, 0.1); border-radius: 5px;">
+                        ✨ Delete Your Digital Footprint Forever
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Stage 2: Rejection -->
+        <div class="stage" id="stage2">
+            <div class="monster-container">
+                <svg class="monster" id="cryingMonster" onclick="clickMonster()" viewBox="0 0 200 200">
+                    <ellipse cx="100" cy="120" rx="70" ry="60" fill="#888" opacity="0.7"/>
+                    
+                    <!-- Üzgün kaşlar -->
+                    <path d="M 60 85 Q 65 80 75 82" stroke="#333" stroke-width="3" fill="none"/>
+                    <path d="M 125 82 Q 135 80 140 85" stroke="#333" stroke-width="3" fill="none"/>
+                    
+                    <!-- Büyük üzgün gözler -->
+                    <ellipse cx="75" cy="100" rx="18" ry="22" fill="#fff"/>
+                    <ellipse cx="125" cy="100" rx="18" ry="22" fill="#fff"/>
+                    <circle cx="75" cy="105" r="8" fill="#000"/>
+                    <circle cx="125" cy="105" r="8" fill="#000"/>
+                    
+                    <!-- Gözyaşları -->
+                    <g class="tears">
+                        <ellipse cx="70" cy="125" rx="4" ry="8" fill="#00bfff" opacity="0.8">
+                            <animate attributeName="cy" values="125;135;125" dur="1.5s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.8;0.4;0.8" dur="1.5s" repeatCount="indefinite"/>
+                        </ellipse>
+                        <ellipse cx="80" cy="130" rx="3" ry="6" fill="#00bfff" opacity="0.6">
+                            <animate attributeName="cy" values="130;140;130" dur="1.8s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.6;0.2;0.6" dur="1.8s" repeatCount="indefinite"/>
+                        </ellipse>
+                        <ellipse cx="120" cy="130" rx="3" ry="6" fill="#00bfff" opacity="0.6">
+                            <animate attributeName="cy" values="130;140;130" dur="1.6s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.6;0.2;0.6" dur="1.6s" repeatCount="indefinite"/>
+                        </ellipse>
+                        <ellipse cx="130" cy="125" rx="4" ry="8" fill="#00bfff" opacity="0.8">
+                            <animate attributeName="cy" values="125;135;125" dur="1.7s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.8;0.4;0.8" dur="1.7s" repeatCount="indefinite"/>
+                        </ellipse>
+                    </g>
+                    
+                    <!-- Üzgün ağız (aşağı doğru) -->
+                    <path d="M 70 145 Q 100 135 130 145" stroke="#000" stroke-width="3" fill="none"/>
+                    
+                    <!-- Titreme efekti -->
+                    <animateTransform
+                        attributeName="transform"
+                        attributeType="XML"
+                        type="translate"
+                        values="0,0; -1,0; 1,0; -1,0; 0,0"
+                        dur="0.5s"
+                        repeatCount="indefinite"/>
+                </svg>
+            </div>
+            <div class="message-box">
+                <h3>⚠️ Access Denied</h3>
+                <p>We respect your choice... but our website cannot function without cookies.</p>
+                <p style="font-weight: bold; color: #f00; font-size: 1.1em; margin-top: 15px;">
+                    Please accept cookies to continue.
+                </p>
+                <p style="font-size: 0.9em; color: #888; margin-top: 15px;">
+                    (Translation: You have no choice)
+                </p>
+            </div>
+            <div style="text-align: center; margin-top: 25px;">
+                <button class="cyber-button" onclick="nextStage(3)">ACCEPT COOKIES</button>
+            </div>
+        </div>
+
+        <!-- Stage 3: Data Collection -->
+        <div class="stage" id="stage3">
+            <div class="monster-container">
+                <svg class="monster eating" id="monsterStage3" onclick="clickMonster()" viewBox="0 0 200 200">
+                    <defs>
+                        <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ff0064"/>
+                            <stop offset="100%" style="stop-color:#8b00ff"/>
+                        </linearGradient>
+                    </defs>
+                    <ellipse cx="100" cy="120" rx="75" ry="65" fill="url(#bodyGrad)"/>
+                    <circle cx="75" cy="95" r="18" fill="#f00"/>
+                    <circle cx="125" cy="95" r="18" fill="#f00"/>
+                    <circle cx="75" cy="95" r="10" fill="#000"/>
+                    <circle cx="125" cy="95" r="10" fill="#000"/>
+                    <ellipse cx="100" cy="140" rx="45" ry="25" fill="#000"/>
+                    <polygon points="70,135 75,145 80,135" fill="#fff"/>
+                    <polygon points="90,135 95,145 100,135" fill="#fff"/>
+                    <polygon points="110,135 115,145 120,135" fill="#fff"/>
+                </svg>
+            </div>
+            <h2 style="text-align: center; color: #f00; margin-bottom: 20px; font-family: 'Orbitron', sans-serif;">
+                ⚠️ FEEDING IN PROGRESS ⚠️
+            </h2>
+            <div id="dataList"></div>
+            <div class="data-progress">
+                <div style="background: rgba(0,0,0,0.7); padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <div style="background: #333; height: 30px; border-radius: 15px; overflow: hidden; position: relative;">
+                        <div id="dataFill" style="background: linear-gradient(90deg, #f00, #f0f); height: 100%; width: 0%; transition: width 0.3s ease; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-family: 'Orbitron', sans-serif;">
+                            Extracting...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 4: Growth -->
+        <div class="stage" id="stage4">
+            <div class="monster-container">
+                <svg class="monster giant" onclick="clickMonster()" viewBox="0 0 200 200">
+                    <ellipse cx="100" cy="120" rx="80" ry="70" fill="#ff0064"/>
+                    <circle cx="75" cy="95" r="20" fill="#f00"/>
+                    <circle cx="125" cy="95" r="20" fill="#f00"/>
+                    <circle cx="75" cy="95" r="12" fill="#000"/>
+                    <circle cx="125" cy="95" r="12" fill="#000"/>
+                    <ellipse cx="100" cy="145" rx="50" ry="30" fill="#000"/>
+                    <polygon points="65,135 72,150 79,135" fill="#fff"/>
+                    <polygon points="90,135 97,150 104,135" fill="#fff"/>
+                    <polygon points="115,135 122,150 129,135" fill="#fff"/>
+                </svg>
+            </div>
+            <h2 style="text-align: center; color: #f00; font-family: 'Orbitron', sans-serif; margin-bottom: 25px;">
+                🎉 CONGRATULATIONS! 🎉
+            </h2>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-number" id="dataPoints">0</div>
+                    <div class="stat-label">DATA POINTS COLLECTED</div>
+                </div>
+                <div class="stat-box" id="companiesBox">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">COMPANIES</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="userValue">$0</div>
+                    <div class="stat-label">YOUR DATA'S WORTH</div>
+                    <div style="color: #888; font-size: 0.8em; margin-top: 5px;">Industry: $300B/year</div>
+                </div>
+            </div>
+            <div class="message-box">
+                <h3 style="color: #0ff;">Your Data Has Been Successfully Harvested!</h3>
+                <p>The Data Eater has consumed your digital identity. Your information is now:</p>
+                <ul style="list-style: none; padding: 0; margin-top: 15px;" id="consumedDataSummary">
+                </ul>
+                <p style="margin-top: 20px; color: #888; font-size: 0.95em;">
+                    <span id="trackersCount">📡 TRACKERS</span> | 
+                    <span id="partnersCount">💰 PARTNERS</span>
+                </p>
+            </div>
+
+            <!-- Comparison Box -->
+            <div class="compare-box">
+                <h4 style="color: #0ff; margin-bottom: 15px; text-align: center;">📊 HOW TRACKABLE ARE YOU?</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: center;">
+                    <div>
+                        <div style="font-size: 1.5em; color: #f00; font-weight: bold;" id="yourDataPoints">0</div>
+                        <div style="color: #888; font-size: 0.9em;">Your Data Points</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.5em; color: #888; font-weight: bold;">342</div>
+                        <div style="color: #888; font-size: 0.9em;">Average User</div>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; text-align: center; color: #0ff; font-size: 1.1em;" id="trackablePercent">
+                    You're more trackable than <span style="color: #f00; font-weight: bold;">0%</span> of users
+                </p>
+            </div>
+
+            <div style="text-align: center; margin-top: 25px;">
+                <button class="cyber-button" onclick="nextStage(5)">CONTINUE</button>
+            </div>
+        </div>
+
+        <!-- Stage 5: The Confession -->
+        <div class="stage" id="stage5">
+            <div class="monster-container">
+                <svg class="monster giant" viewBox="0 0 200 200">
+                    <defs>
+                        <linearGradient id="darkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#000;stop-opacity:0.9" />
+                            <stop offset="100%" style="stop-color:#3a0066;stop-opacity:0.9" />
+                        </linearGradient>
+                    </defs>
+                    <ellipse cx="100" cy="120" rx="80" ry="70" fill="url(#darkGrad)"/>
+                    
+                    <!-- Sad, guilty eyes -->
+                    <ellipse cx="75" cy="95" rx="20" ry="24" fill="#fff" opacity="0.8"/>
+                    <ellipse cx="125" cy="95" rx="20" ry="24" fill="#fff" opacity="0.8"/>
+                    <circle cx="75" cy="100" r="12" fill="#000"/>
+                    <circle cx="125" cy="100" r="12" fill="#000"/>
+                    <circle cx="78" cy="96" r="4" fill="#fff" opacity="0.5"/>
+                    <circle cx="128" cy="96" r="4" fill="#fff" opacity="0.5"/>
+                    
+                    <!-- Sad eyebrows -->
+                    <path d="M 60 80 Q 65 75 75 77" stroke="#666" stroke-width="3" fill="none"/>
+                    <path d="M 125 77 Q 135 75 140 80" stroke="#666" stroke-width="3" fill="none"/>
+                    
+                    <!-- Neutral/sad mouth -->
+                    <ellipse cx="100" cy="145" rx="35" ry="8" fill="#000" opacity="0.7"/>
+                    
+                    <!-- Subtle glow effect -->
+                    <animateTransform
+                        attributeName="transform"
+                        attributeType="XML"
+                        type="scale"
+                        values="1;1.02;1"
+                        dur="3s"
+                        repeatCount="indefinite"/>
+                </svg>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2 style="color: #f0f; font-family: 'Orbitron', sans-serif; font-size: 2.5em; margin-bottom: 20px; text-shadow: 0 0 20px rgba(255,0,255,0.8);">
+                    THE DATA EATER'S CONFESSION
+                </h2>
+            </div>
+
+            <div class="message-box" style="border: 2px solid #f0f; box-shadow: 0 0 30px rgba(255,0,255,0.5);">
+                <p style="font-size: 1.3em; color: #fff; text-align: center; margin-bottom: 25px; font-style: italic;">
+                    I'm sorry...
+                </p>
+                
+                <p style="font-size: 1.1em; color: #ccc; line-height: 1.8; margin-bottom: 20px;">
+                    I didn't want to be a monster.
+                </p>
+                
+                <div style="background: rgba(255,0,255,0.1); padding: 20px; border-radius: 10px; margin: 25px 0; border-left: 4px solid #f0f;">
+                    <p style="font-size: 1.2em; color: #0ff; margin-bottom: 15px;">
+                        <strong>I was created by:</strong>
+                    </p>
+                    <p style="font-size: 1.4em; color: #f00; font-weight: bold; font-family: 'Orbitron', sans-serif; line-height: 1.6;">
+                        Google • Meta • Amazon<br>
+                        Microsoft • Apple
+                    </p>
+                </div>
+                
+                <p style="font-size: 1.1em; color: #ccc; line-height: 1.8; margin-bottom: 20px;">
+                    They made me hungry. They made me <span style="color: #f00; font-weight: bold;">insatiable</span>.
+                </p>
+                
+                <p style="font-size: 1.1em; color: #ccc; line-height: 1.8; margin-bottom: 20px;">
+                    I'm just doing my job: <span style="color: #0ff; font-weight: bold; font-size: 1.2em;">FEEDING THE CORPORATIONS</span>.
+                </p>
+                
+                <div style="background: rgba(0,0,0,0.7); padding: 25px; border-radius: 10px; margin: 30px 0; border: 2px solid #f00;">
+                    <p style="font-size: 1.3em; color: #fff; line-height: 1.8; margin-bottom: 15px;">
+                        You're not my enemy.
+                    </p>
+                    <p style="font-size: 1.8em; color: #f00; font-weight: bold; font-family: 'Orbitron', sans-serif; text-shadow: 0 0 20px rgba(255,0,0,0.8);">
+                        YOU'RE MY FOOD.
+                    </p>
+                </div>
+                
+                <p style="font-size: 1.2em; color: #888; text-align: center; margin-top: 30px; font-style: italic;">
+                    And there's nothing you can do about it.
+                </p>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="cyber-button" onclick="nextStage(6)" style="background: linear-gradient(45deg, #f00, #000); animation: pulse 2s ease-in-out infinite;">
+                    OR IS THERE? →
+                </button>
+            </div>
+        </div>
+
+        <!-- Stage 6: Final message -->
+        <div class="stage" id="stage6">
+            <div style="text-align: center; padding: 30px;">
+                <h2 style="color: #0ff; font-family: 'Orbitron', sans-serif; margin-bottom: 30px;">
+                    THE END?
+                </h2>
+                <div class="message-box">
+                    <p style="font-size: 1.2em; line-height: 1.8;">
+                        This is not fiction. This is reality. Every website you visit feeds The Data Eater. 
+                        Your clicks, your location, your habits - all consumed and sold.
+                    </p>
+                    <p style="margin-top: 20px; color: #888;">
+                        Welcome to surveillance capitalism. You are the product.
+                    </p>
+                </div>
+
+                <!-- Alternatifler -->
+                <div style="margin-top: 40px; text-align: left;">
+                    <h3 style="color: #0ff; font-family: 'Orbitron', sans-serif; margin-bottom: 20px; text-align: center;">
+                        🛡️ BUT YOU DON'T HAVE TO FEED THE MONSTER
+                    </h3>
+                    
+                    <div class="message-box">
+                        <h4 style="color: #ff69b4; margin-bottom: 15px;">Privacy-Focused Browsers:</h4>
+                        <ul style="list-style: none; padding: 0; margin-bottom: 25px;">
+                            <li style="padding: 10px; margin: 8px 0; background: rgba(0, 255, 255, 0.1); border-radius: 5px; border-left: 3px solid #0ff;">
+                                🧅 <strong>Tor Browser</strong> - Anonymous browsing through onion routing<br>
+                                <span style="color: #888; font-size: 0.9em;">Download: <a href="https://www.torproject.org/" target="_blank" style="color: #0ff;">torproject.org</a></span>
+                            </li>
+                            <li style="padding: 10px; margin: 8px 0; background: rgba(0, 255, 255, 0.1); border-radius: 5px; border-left: 3px solid #0ff;">
+                                🦁 <strong>Brave</strong> - Blocks ads and trackers by default<br>
+                                <span style="color: #888; font-size: 0.9em;">Download: <a href="https://brave.com/" target="_blank" style="color: #0ff;">brave.com</a></span>
+                            </li>
+                            <li style="padding: 10px; margin: 8px 0; background: rgba(0, 255, 255, 0.1); border-radius: 5px; border-left: 3px solid #0ff;">
+                                🦊 <strong>Firefox</strong> (with privacy extensions) - Open-source and customizable<br>
+                                <span style="color: #888; font-size: 0.9em;">Download: <a href="https://www.mozilla.org/firefox/" target="_blank" style="color: #0ff;">mozilla.org/firefox</a></span>
+                            </li>
+                            <li style="padding: 10px; margin: 8px 0; background: rgba(0, 255, 255, 0.1); border-radius: 5px; border-left: 3px solid #0ff;">
+                                🦆 <strong>DuckDuckGo Browser</strong> - Built-in tracker blocking<br>
+                                <span style="color: #888; font-size: 0.9em;">Download: <a href="https://duckduckgo.com/app" target="_blank" style="color: #0ff;">duckduckgo.com/app</a></span>
+                            </li>
+                        </ul>
+
+                        <h4 style="color: #ff69b4; margin-bottom: 15px; margin-top: 30px;">Browser Extensions:</h4>
+                        <ul style="list-style: none; padding: 0; margin-bottom: 25px;">
+                            <li style="padding: 10px; margin: 8px 0; background: rgba(255, 0, 100, 0.1); border-radius: 5px; border-left: 3px solid #f0f;">
+                                🛡️ <strong>uBlock Origin</strong> - Advanced ad and tracker blocker
+                            </li>
+                            <li style="padding: 10px; margin: 8px 0; background: rgba(255, 0, 100, 0.1); border-radius: 5px; border-left: 3px solid #f0f;">
+                                🦡 <strong>Privacy Badger</strong> - Learns to block invisible trackers
+                            </li>
+                            <li style="padding: 10px; margin: 8px 0; background: rgba(255, 0, 100, 0.1); border-radius: 5px; border-left: 3px solid #f0f;">
+                                🔒 <strong>HTTPS Everywhere</strong> - Encrypts your communications
+                            </li>
+                        </ul>
+
+                        <p style="margin-top: 25px; color: #aaa; text-align: center; font-style: italic;">
+                            "The monster only has power if we keep feeding it."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Share Buttons -->
+                <div style="margin-top: 40px;">
+                    <h3 style="color: #0ff; font-family: 'Orbitron', sans-serif; margin-bottom: 20px; text-align: center;">
+                        ⚠️ WARN YOUR FRIENDS
+                    </h3>
+                    <div class="share-buttons">
+                        <a href="#" onclick="shareTwitter(); return false;" class="share-btn">
+                            🐦 Share on Twitter
+                        </a>
+                        <a href="#" onclick="shareWhatsApp(); return false;" class="share-btn">
+                            💬 Share on WhatsApp
+                        </a>
+                        <button onclick="copyLink()" class="share-btn">
+                            🔗 Copy Link
+                        </button>
+                    </div>
+                    <p style="text-align: center; color: #666; font-size: 0.85em; margin-top: 10px;">
+                        Help others understand surveillance capitalism
+                    </p>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="cyber-button" onclick="restartExperience()">🔄 START OVER</button>
+                </div>
+
+                <p style="margin-top: 30px; color: #666; font-size: 0.9em;">
+                    Created for Internet Inequalities Module - 2026
+                </p>
+
+                <!-- Detailed Credits -->
+                <div style="margin-top: 40px; padding: 30px; background: rgba(0, 0, 0, 0.5); border-radius: 15px; border: 1px solid #333;">
+                    <h4 style="color: #888; text-align: center; margin-bottom: 20px; font-size: 1em;">PROJECT DETAILS</h4>
+                    
+                    <div style="color: #666; font-size: 0.85em; line-height: 1.8; text-align: left;">
+                        <p style="margin-bottom: 10px;">
+                            <strong style="color: #0ff;">Concept:</strong> This project transforms invisible data collection into a visceral, interactive experience. 
+                            The Data Eater embodies surveillance capitalism—growing from cute to monstrous as it consumes your digital identity.
+                        </p>
+                        
+                        <p style="margin-bottom: 10px;">
+                            <strong style="color: #0ff;">Critical Design:</strong> Uses horror aesthetics and dark patterns to critique Big Tech's data extraction practices. 
+                            Every "Accept All" button, every "Legitimate Interest" toggle, every impossible-to-configure preference panel is real.
+                        </p>
+                        
+                        <p style="margin-bottom: 10px;">
+                            <strong style="color: #0ff;">Data Collection:</strong> All data processing happens in your browser. Nothing is stored or transmitted. 
+                            This project collects your real device fingerprint to demonstrate—not to exploit.
+                        </p>
+                        
+                        <p style="margin-bottom: 10px;">
+                            <strong style="color: #0ff;">Industry Context:</strong> The data broker industry generates over $300 billion annually. 
+                            Your personal data is worth approximately $240 per year to these companies. You get $0.
+                        </p>
+                        
+                        <p style="margin-top: 20px; text-align: center; font-style: italic; color: #888;">
+                            "Technology is neither good nor bad; nor is it neutral." — Melvin Kranzberg
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Popup -->
+    <div class="cookie-popup" id="cookiePopup" style="display: none;">
+        <div class="cookie-content">
+            <h3 style="color: #0ff; margin-bottom: 15px; font-family: 'Orbitron', sans-serif;">
+                🍪 WE VALUE YOUR PRIVACY
+            </h3>
+            <p style="margin-bottom: 20px; color: #ccc;">
+                We and our <span style="color: #ff0064;">847 trusted partners</span> use cookies to personalize your experience, 
+                analyze traffic, and show you targeted advertisements. By clicking "Accept All", you agree to let us 
+                harvest every piece of data about you.
+            </p>
+            <div class="button-group">
+                <button class="cyber-button btn-accept" onclick="acceptCookies()">ACCEPT ALL</button>
+                <button class="cyber-button btn-reject" onclick="rejectCookies()">REJECT ALL</button>
+            </div>
+            <button class="cyber-button btn-manage" onclick="manageCookies()" style="background: rgba(100, 100, 100, 0.5); margin-top: 10px; width: 100%; font-size: 0.9em; border: 1px solid #666;">
+                Manage Preferences (3,842 vendors - 47 hours to configure)
+            </button>
+        </div>
+    </div>
+
+    <!-- Cookie Management Overlay -->
+    <div class="cookie-management" id="cookieManagement">
+        <div class="management-header">
+            <div style="max-width: 1000px; margin: 0 auto;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                    <div style="flex: 1;">
+                        <h2 style="color: #0ff; font-family: 'Orbitron', sans-serif; margin-bottom: 10px;">MANAGING COOKIE PREFERENCES</h2>
+                        <p style="color: #888; font-size: 0.9em;">Review and configure 3,842 vendors. Estimated time: 47 hours.</p>
+                    </div>
+                    <button class="cyber-button" onclick="closeManagement()" style="padding: 10px 20px; margin-left: 20px; white-space: nowrap;">
+                        GIVE UP & ACCEPT ALL
+                    </button>
+                </div>
+                
+                <!-- Time Wasted Counter -->
+                <div class="time-wasted" style="margin-top: 0;">
+                    <div>Time wasted: <span class="time-big" id="timeWasted">0:00</span></div>
+                    <div style="color: #888; font-size: 0.85em; margin-top: 5px;">
+                        Estimated remaining: <span id="timeRemaining">46:59:60</span><br>
+                        <span style="color: #f90;">Most people give up in 3 minutes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="scroll-counter" id="scrollCounter">
+            Vendors Reviewed: <span id="vendorCount">0</span> / 3,842
+        </div>
+
+        <div class="management-content" id="vendorList">
+            <!-- Vendors will be dynamically generated -->
+        </div>
+
+        <div class="infinite-scroll-warning">
+            ⚠️ STILL LOADING MORE VENDORS... ⚠️<br>
+            <span style="font-size: 0.8em; color: #888;">This is taking forever, isn't it?</span>
+        </div>
+    </div>
+
+    <script>
+        let currentStage = 0;
+        let dataPointsCount = 0;
+        let companiesCount = 0;
+        let soundEnabled = true;
+        let clickCount = 0;
+        let monsterScale = 1;
+        let realtimeInterval;
+        let managementStartTime;
+        let timeWastedInterval;
+        let totalDataSold = 0;
+
+        // Audio Context for sound effects
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(frequency, duration, type = 'sine') {
+            if (!soundEnabled) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = type;
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playClickSound() {
+            playSound(800, 0.1, 'square');
+            setTimeout(() => playSound(1000, 0.05, 'square'), 50);
+        }
+
+        function playGrowSound() {
+            playSound(200, 0.3, 'sine');
+            setTimeout(() => playSound(400, 0.2, 'sine'), 100);
+            setTimeout(() => playSound(600, 0.15, 'sine'), 200);
+        }
+
+        function playEatSound() {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    playSound(300 + Math.random() * 200, 0.1, 'sawtooth');
+                }, i * 100);
+            }
+        }
+
+        function playWarningSound() {
+            playSound(150, 0.5, 'triangle');
+            setTimeout(() => playSound(150, 0.5, 'triangle'), 600);
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('soundToggle');
+            btn.textContent = soundEnabled ? '🔊 SOUND ON' : '🔇 SOUND OFF';
+            btn.style.background = soundEnabled ? 
+                'rgba(255, 0, 100, 0.3)' : 
+                'rgba(100, 100, 100, 0.3)';
+        }
+
+        function clickMonster() {
+            clickCount++;
+            monsterScale = Math.min(1 + (clickCount * 0.1), 3);
+            
+            const monsters = document.querySelectorAll('.monster');
+            monsters.forEach(monster => {
+                monster.style.setProperty('--monster-scale', monsterScale);
+                monster.classList.add('growing');
+                setTimeout(() => monster.classList.remove('growing'), 500);
+            });
+            
+            // Update click counter
+            const counters = document.querySelectorAll('.click-counter');
+            counters.forEach(counter => {
+                if (currentStage === 0) {
+                    counter.textContent = `Clicks: ${clickCount} 🎀 Keep clicking!`;
+                } else {
+                    counter.textContent = `Clicks: ${clickCount} ✨ I'm growing!`;
+                }
+            });
+            
+            playClickSound();
+            
+            if (clickCount % 5 === 0) {
+                playGrowSound();
+            }
+            
+            // God mode - 50 clicks
+            if (clickCount === 50) {
+                triggerGodMode();
+            }
+            
+            // Cookie emoji animasyonu
+            spawnCookieEmoji(event);
+        }
+        
+        function spawnCookieEmoji(event) {
+            const cookieEmojis = ['🍪', '🍪', '🍪', '📊', '📍', '💻', '🔋', '👁️'];
+            const emoji = document.createElement('div');
+            emoji.className = 'cookie-emoji';
+            emoji.textContent = cookieEmojis[Math.floor(Math.random() * cookieEmojis.length)];
+            
+            // Fare pozisyonunu al veya random pozisyon
+            const x = event ? event.clientX : window.innerWidth / 2 + (Math.random() - 0.5) * 200;
+            const y = event ? event.clientY : window.innerHeight / 2 + (Math.random() - 0.5) * 200;
+            
+            emoji.style.left = x + 'px';
+            emoji.style.top = y + 'px';
+            
+            document.body.appendChild(emoji);
+            
+            setTimeout(() => {
+                emoji.remove();
+            }, 2000);
+        }
+
+        function nextStage(stage) {
+            document.body.className = `stage-${stage}`;
+            
+            document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+            document.getElementById(`stage${stage}`).classList.add('active');
+            currentStage = stage;
+
+            if (stage === 1) {
+                playClickSound();
+                setTimeout(() => {
+                    document.getElementById('cookiePopup').style.display = 'block';
+                }, 1500);
+            }
+
+            if (stage === 3) {
+                playEatSound();
+                setTimeout(startDataCollection, 500);
+                startDataStream();
+                startRealtimeCounter();
+                setTimeout(requestCameraAccess, 3000);
+            }
+
+            if (stage === 4) {
+                playWarningSound();
+                showDataSummary();
+                if (realtimeInterval) clearInterval(realtimeInterval);
+            }
+
+            if (stage === 5) {
+                playWarningSound();
+                // Screen shake for confession
+                document.body.classList.add('shake');
+                setTimeout(() => document.body.classList.remove('shake'), 500);
+            }
+        }
+
+        function acceptCookies() {
+            playClickSound();
+            document.getElementById('cookiePopup').style.display = 'none';
+            nextStage(3);
+        }
+
+        function rejectCookies() {
+            playCryingSound();
+            document.getElementById('cookiePopup').style.display = 'none';
+            nextStage(2);
+        }
+        
+        function manageCookies() {
+            playWarningSound();
+            document.getElementById('cookieManagement').classList.add('active');
+            document.getElementById('cookiePopup').style.display = 'none';
+            generateVendors();
+            startScrollTracking();
+            startTimeWasted();
+        }
+
+        function closeManagement() {
+            document.getElementById('cookieManagement').classList.remove('active');
+            if (timeWastedInterval) clearInterval(timeWastedInterval);
+            acceptCookies();
+        }
+
+        let vendorsGenerated = 0;
+        let scrollCheckInterval;
+
+        function generateVendors() {
+            const vendorList = document.getElementById('vendorList');
+            vendorList.innerHTML = '';
+            
+            const categories = [
+                {
+                    name: 'Advertising Partners',
+                    icon: '📢',
+                    purposes: 'Targeted advertising, profiling, behavioral tracking'
+                },
+                {
+                    name: 'Analytics & Measurement',
+                    icon: '📊', 
+                    purposes: 'User analytics, heat mapping, session recording, A/B testing'
+                },
+                {
+                    name: 'Data Brokers',
+                    icon: '💰',
+                    purposes: 'Data aggregation, selling your information to third parties'
+                },
+                {
+                    name: 'Social Media Integration',
+                    icon: '📱',
+                    purposes: 'Cross-site tracking, social graph mapping, friend suggestions'
+                }
+            ];
+
+            const companyPrefixes = ['AdTech', 'DataCorp', 'TrackMe', 'ProfilePro', 'InsightHub', 'ClickMax', 'UserData', 'BehaviorTech', 'TargetPro', 'AnalyzeMe'];
+            const companySuffixes = ['Analytics', 'Solutions', 'Network', 'Media', 'Group', 'Partners', 'Systems', 'Technologies', 'Platform', 'Services'];
+
+            categories.forEach((category, catIndex) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'vendor-category';
+                categoryDiv.innerHTML = `
+                    <h3 style="color: #ff0064; font-family: 'Orbitron', sans-serif; margin-bottom: 15px;">
+                        ${category.icon} ${category.name}
+                    </h3>
+                    <p style="color: #888; margin-bottom: 20px; font-size: 0.9em;">
+                        ${category.purposes}
+                    </p>
+                    <div id="category-${catIndex}"></div>
+                `;
+                vendorList.appendChild(categoryDiv);
+
+                // Generate vendors for each category
+                const vendorContainer = document.getElementById(`category-${catIndex}`);
+                for (let i = 0; i < 50; i++) {
+                    const companyName = companyPrefixes[Math.floor(Math.random() * companyPrefixes.length)] + 
+                                       companySuffixes[Math.floor(Math.random() * companySuffixes.length)];
+                    const hasLegitimateInterest = Math.random() > 0.3;
+                    
+                    const vendorDiv = document.createElement('div');
+                    vendorDiv.className = 'vendor-item';
+                    vendorDiv.innerHTML = `
+                        <div class="vendor-info">
+                            <div class="vendor-name">${companyName} Ltd.</div>
+                            <div class="vendor-purposes">
+                                ${category.purposes}
+                                ${hasLegitimateInterest ? '<br><span class="legitimate-interest">⚠️ LEGITIMATE INTEREST - Cannot be disabled</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="toggle-switch ${hasLegitimateInterest ? 'on toggle-disabled' : 'on'}" 
+                             onclick="${hasLegitimateInterest ? '' : 'toggleVendor(this)'}">
+                        </div>
+                    `;
+                    vendorContainer.appendChild(vendorDiv);
+                    vendorsGenerated++;
+                }
+            });
+
+            updateVendorCount();
+        }
+
+        function toggleVendor(element) {
+            element.classList.toggle('on');
+            // Ses efekti
+            playClickSound();
+            
+            // Ama bir süre sonra tekrar açılır (dark pattern)
+            setTimeout(() => {
+                element.classList.add('on');
+                playWarningSound();
+            }, 2000);
+        }
+
+        function startScrollTracking() {
+            const management = document.getElementById('cookieManagement');
+            let lastScrollTop = 0;
+            
+            management.addEventListener('scroll', function() {
+                const scrollTop = this.scrollTop;
+                const scrollHeight = this.scrollHeight;
+                const clientHeight = this.clientHeight;
+                
+                // Update counter based on scroll position
+                const scrollPercentage = scrollTop / (scrollHeight - clientHeight);
+                const reviewedCount = Math.floor(scrollPercentage * 200); // Max 200 shown
+                document.getElementById('vendorCount').textContent = reviewedCount;
+                
+                // Generate more vendors as user scrolls (infinite scroll)
+                if (scrollTop > lastScrollTop && scrollTop + clientHeight >= scrollHeight - 500) {
+                    if (vendorsGenerated < 500) {
+                        generateMoreVendors();
+                    }
+                }
+                
+                lastScrollTop = scrollTop;
+            });
+        }
+
+        function generateMoreVendors() {
+            // Simüle et ki kullanıcı sürekli yeni vendor'lar görüyor
+            const vendorList = document.getElementById('vendorList');
+            const loadingMsg = document.createElement('div');
+            loadingMsg.style.textAlign = 'center';
+            loadingMsg.style.padding = '20px';
+            loadingMsg.style.color = '#0ff';
+            loadingMsg.innerHTML = '⏳ Loading more vendors...';
+            vendorList.appendChild(loadingMsg);
+            
+            setTimeout(() => {
+                loadingMsg.remove();
+                // Birkaç vendor daha ekle
+                for (let i = 0; i < 10; i++) {
+                    const vendorDiv = document.createElement('div');
+                    vendorDiv.className = 'vendor-item';
+                    vendorDiv.innerHTML = `
+                        <div class="vendor-info">
+                            <div class="vendor-name">AdNetwork${vendorsGenerated + i} Solutions</div>
+                            <div class="vendor-purposes">
+                                Tracking, profiling, selling your data
+                                <br><span class="legitimate-interest">⚠️ LEGITIMATE INTEREST - Cannot be disabled</span>
+                            </div>
+                        </div>
+                        <div class="toggle-switch on toggle-disabled"></div>
+                    `;
+                    vendorList.appendChild(vendorDiv);
+                }
+                vendorsGenerated += 10;
+            }, 500);
+        }
+
+        function updateVendorCount() {
+            document.getElementById('vendorCount').textContent = '0';
+        }
+
+        function startDataStream() {
+            const dataStream = document.getElementById('dataStream');
+            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const dataTypes = ['📍', '💻', '🔋', '👁️', '📊', '🍪', '⚡'];
+            
+            // Create 20 falling columns
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'data-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                
+                // Mix of characters and data emojis
+                const content = Math.random() > 0.7 ? 
+                    dataTypes[Math.floor(Math.random() * dataTypes.length)] :
+                    chars[Math.floor(Math.random() * chars.length)];
+                particle.textContent = content;
+                
+                dataStream.appendChild(particle);
+            }
+        }
+
+        // Real-time counter
+        function startRealtimeCounter() {
+            let count = dataPointsCount;
+            let companies = companiesCount;
+            
+            realtimeInterval = setInterval(() => {
+                count += Math.floor(Math.random() * 5) + 2;
+                companies += Math.random() > 0.7 ? 1 : 0;
+                
+                document.getElementById('realtimeCount').textContent = count;
+                document.getElementById('realtimeCompanies').textContent = companies;
+                
+                dataPointsCount = count;
+                companiesCount = companies;
+            }, 500);
+        }
+
+        // Camera/Microphone access request
+        function requestCameraAccess() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                // Try to request camera access
+                navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                    .then(stream => {
+                        // Access granted - immediately stop and show message
+                        stream.getTracks().forEach(track => track.stop());
+                        showDataSale('📹 Camera Access', 'Meta', '$8.50');
+                        showDataSale('🎤 Microphone Access', 'Google', '$6.20');
+                    })
+                    .catch(err => {
+                        // Access denied - show alternative message
+                        setTimeout(() => {
+                            const dataList = document.getElementById('dataList');
+                            const item = document.createElement('div');
+                            item.className = 'data-item';
+                            item.innerHTML = `📹 <strong>Camera/Microphone Request:</strong> Access denied<br>
+                                            <span style="color: #888; font-size: 0.9em;">Don't worry, we already have your face from social media<br>
+                                            <span style="color: #f90;">Your Instagram photos: Analyzed ✓</span></span>`;
+                            dataList.appendChild(item);
+                        }, 500);
+                    });
+            }
+        }
+
+        // Data selling notifications
+        function showDataSale(dataType, company, price) {
+            const notification = document.createElement('div');
+            notification.className = 'sale-notification';
+            notification.innerHTML = `
+                <div style="margin-bottom: 5px;">💰 DATA SOLD!</div>
+                <div class="sale-item">${dataType}</div>
+                <div style="margin: 5px 0;">→ SOLD to <span class="sale-company">${company}</span></div>
+                <div class="sale-price">${price}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            totalDataSold += parseFloat(price.replace('$', ''));
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+            
+            playEatSound();
+        }
+
+        // Trigger data sales during collection
+        function feedToMonster(type, data, displayText) {
+            dataPointsCount++;
+            companiesCount = Math.floor(Math.random() * 50) + 150;
+            
+            const dataList = document.getElementById('dataList');
+            const item = document.createElement('div');
+            item.className = 'data-item';
+            item.innerHTML = displayText;
+            dataList.appendChild(item);
+            
+            playEatSound();
+            
+            // Trigger random data sales
+            setTimeout(() => {
+                const sales = [
+                    ['Your Location', 'Google', '$2.50'],
+                    ['Your Device ID', 'Meta', '$3.20'],
+                    ['Your Browsing History', 'Amazon', '$4.80'],
+                    ['Your Search Queries', 'Microsoft', '$2.90'],
+                    ['Your App Usage', 'Apple', '$3.50'],
+                    ['Your Contact List', 'TikTok', '$5.20'],
+                    ['Your Photos Metadata', 'Twitter', '$1.80']
+                ];
+                
+                const sale = sales[Math.floor(Math.random() * sales.length)];
+                showDataSale(sale[0], sale[1], sale[2]);
+            }, Math.random() * 2000 + 1000);
+        }
+
+        // God Mode - 50 clicks
+        function triggerGodMode() {
+            playWarningSound();
+            
+            // Explosion effect
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            explosion.textContent = '💥';
+            document.body.appendChild(explosion);
+            
+            setTimeout(() => {
+                explosion.remove();
+                alert('🎮 GOD MODE UNLOCKED!\n\nYou fed the monster too much!\n\nEven monsters have limits.\nBut corporations don\'t.\n\n"The appetite for data is infinite,\nbut your privacy is not."');
+                
+                // Reset monster
+                clickCount = 0;
+                monsterScale = 1;
+                const monsters = document.querySelectorAll('.monster');
+                monsters.forEach(monster => {
+                    monster.style.setProperty('--monster-scale', 1);
+                });
+            }, 1000);
+        }
+
+        // Time wasted counter
+        function startTimeWasted() {
+            managementStartTime = Date.now();
+            
+            timeWastedInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - managementStartTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                
+                document.getElementById('timeWasted').textContent = 
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Calculate remaining (47 hours minus elapsed)
+                const totalSeconds = 47 * 60 * 60;
+                const remaining = totalSeconds - elapsed;
+                const remHours = Math.floor(remaining / 3600);
+                const remMinutes = Math.floor((remaining % 3600) / 60);
+                const remSeconds = remaining % 60;
+                
+                document.getElementById('timeRemaining').textContent = 
+                    `${remHours}:${remMinutes.toString().padStart(2, '0')}:${remSeconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Share functions
+        function shareTwitter() {
+            const text = encodeURIComponent('I just discovered how much data websites collect about me. The Data Eater showed me the ugly truth of surveillance capitalism. 😱 Try it yourself:');
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+
+        function shareWhatsApp() {
+            const text = encodeURIComponent('I just tried The Data Eater - it shows you exactly what data websites collect about you in real-time. It\'s shocking! Check it out: ' + window.location.href);
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('✅ Link copied to clipboard!\n\nShare it with your friends to warn them about surveillance capitalism.');
+            });
+        }
+        
+        function playCryingSound() {
+            // Üzgün ağlama sesi - düşen tonlar
+            playSound(400, 0.3, 'sine');
+            setTimeout(() => playSound(350, 0.3, 'sine'), 300);
+            setTimeout(() => playSound(300, 0.5, 'sine'), 600);
+            setTimeout(() => playSound(250, 0.4, 'sine'), 1000);
+        }
+
+        function startDataCollection() {
+            collectDeviceData();
+            setTimeout(() => collectLocationData(), 1000);
+            setTimeout(() => collectBehaviorData(), 2000);
+            setTimeout(() => collectStoredData(), 3000);
+            setTimeout(() => collectBatteryData(), 4000);
+            setTimeout(() => animateProgressBar(), 500);
+            
+            // Her veri toplandığında canavar büyüsün
+            const growIntervals = [500, 1500, 2500, 3500, 4500];
+            growIntervals.forEach(delay => {
+                setTimeout(() => {
+                    clickCount++;
+                    monsterScale = Math.min(1 + (clickCount * 0.08), 2.5);
+                    const monster = document.getElementById('monsterStage3');
+                    if (monster) {
+                        monster.style.setProperty('--monster-scale', monsterScale);
+                        monster.classList.add('growing');
+                        setTimeout(() => monster.classList.remove('growing'), 500);
+                        playGrowSound();
+                    }
+                }, delay);
+            });
+        }
+
+        function feedToMonster(type, data, displayText) {
+            dataPointsCount++;
+            companiesCount = Math.floor(Math.random() * 50) + 150;
+            
+            const dataList = document.getElementById('dataList');
+            const item = document.createElement('div');
+            item.className = 'data-item';
+            item.innerHTML = displayText;
+            dataList.appendChild(item);
+            
+            playEatSound();
+        }
+
+        function collectDeviceData() {
+            // Gerçek cihaz bilgilerini topla
+            const ua = navigator.userAgent;
+            
+            // Browser detection
+            let browser = 'Unknown Browser';
+            if (ua.indexOf('Firefox') > -1) browser = 'Firefox';
+            else if (ua.indexOf('SamsungBrowser') > -1) browser = 'Samsung Internet';
+            else if (ua.indexOf('Opera') > -1 || ua.indexOf('OPR') > -1) browser = 'Opera';
+            else if (ua.indexOf('Trident') > -1) browser = 'Internet Explorer';
+            else if (ua.indexOf('Edge') > -1) browser = 'Microsoft Edge';
+            else if (ua.indexOf('Chrome') > -1) browser = 'Google Chrome';
+            else if (ua.indexOf('Safari') > -1) browser = 'Safari';
+            
+            // OS Detection
+            let os = 'Unknown OS';
+            if (ua.indexOf('Win') > -1) os = 'Windows';
+            else if (ua.indexOf('Mac') > -1) os = 'MacOS';
+            else if (ua.indexOf('Linux') > -1) os = 'Linux';
+            else if (ua.indexOf('Android') > -1) os = 'Android';
+            else if (ua.indexOf('iOS') > -1 || ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1) os = 'iOS';
+            
+            // Canvas fingerprinting için hash
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.textBaseline = 'top';
+            ctx.font = '14px Arial';
+            ctx.fillText('Device Fingerprint', 2, 2);
+            const canvasHash = canvas.toDataURL().slice(-10);
+            
+            const deviceData = {
+                browser: browser,
+                os: os,
+                platform: navigator.platform,
+                language: navigator.language,
+                languages: navigator.languages ? navigator.languages.join(', ') : navigator.language,
+                screen: `${screen.width}x${screen.height}`,
+                colorDepth: `${screen.colorDepth}-bit`,
+                pixelRatio: window.devicePixelRatio || 1,
+                cores: navigator.hardwareConcurrency || 'Unknown',
+                memory: navigator.deviceMemory ? `${navigator.deviceMemory}GB RAM` : 'Unknown',
+                connection: navigator.connection ? navigator.connection.effectiveType : 'Unknown',
+                touchPoints: navigator.maxTouchPoints || 0,
+                canvasHash: canvasHash,
+                doNotTrack: navigator.doNotTrack || 'Not set',
+                cookiesEnabled: navigator.cookieEnabled
+            };
+            
+            let displayText = `💻 <strong>Device Fingerprint:</strong> ${deviceData.browser} on ${deviceData.os}<br>
+                              <span style="color: #888; font-size: 0.9em;">
+                              Screen: ${deviceData.screen} (${deviceData.pixelRatio}x pixel ratio, ${deviceData.colorDepth})<br>
+                              CPU: ${deviceData.cores} cores detected`;
+            
+            if (deviceData.memory !== 'Unknown') {
+                displayText += ` | ${deviceData.memory}`;
+            }
+            
+            displayText += `<br>Canvas Hash: ${deviceData.canvasHash} | Touch: ${deviceData.touchPoints} points<br>
+                           Languages: ${deviceData.languages} | DNT: ${deviceData.doNotTrack}</span>`;
+            
+            feedToMonster('device', deviceData, displayText);
+        }
+
+        function collectLocationData() {
+            const locationData = {
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                timezoneOffset: new Date().getTimezoneOffset(),
+                language: navigator.language,
+                languages: navigator.languages
+            };
+            
+            // Tarayıcı geolocation desteği varsa gerçek konum iste
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        // Konum alındı
+                        const lat = position.coords.latitude.toFixed(4);
+                        const lon = position.coords.longitude.toFixed(4);
+                        const accuracy = Math.round(position.coords.accuracy);
+                        
+                        const displayText = `📍 <strong>Precise Location:</strong> ${lat}°N, ${lon}°E<br>
+                                            <span style="color: #f00; font-size: 0.9em;">⚠️ EXACT GPS COORDINATES CAPTURED (±${accuracy}m accuracy)<br>
+                                            Timezone: ${locationData.timezone} | Language: ${locationData.language}</span>`;
+                        
+                        feedToMonster('location', { ...locationData, lat, lon, accuracy }, displayText);
+                    },
+                    (error) => {
+                        // Konum reddedildi veya alınamadı
+                        let errorMsg = 'Location access denied';
+                        if (error.code === 1) errorMsg = 'User denied location access';
+                        else if (error.code === 2) errorMsg = 'Location unavailable';
+                        else if (error.code === 3) errorMsg = 'Location timeout';
+                        
+                        const displayText = `📍 <strong>Location Inference:</strong> ${locationData.timezone}<br>
+                                            <span style="color: #888; font-size: 0.9em;">GPS denied - Using timezone triangulation<br>
+                                            Estimated region from IP address and browser settings<br>
+                                            Language: ${locationData.language} (${errorMsg})</span>`;
+                        
+                        feedToMonster('location', locationData, displayText);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                // Geolocation desteklenmiyor
+                const displayText = `📍 <strong>Location Data:</strong> ${locationData.timezone}<br>
+                                    <span style="color: #888; font-size: 0.9em;">Geolocation API not supported - inferring from timezone<br>
+                                    Language: ${locationData.language}</span>`;
+                
+                feedToMonster('location', locationData, displayText);
+            }
+        }
+
+        function collectBehaviorData() {
+            const now = new Date();
+            const hour = now.getHours();
+            let timeContext = '';
+            
+            if (hour >= 0 && hour < 6) timeContext = ' - Late night browsing detected (insomnia pattern)';
+            else if (hour >= 6 && hour < 12) timeContext = ' - Morning routine identified (work/school hours)';
+            else if (hour >= 12 && hour < 17) timeContext = ' - Afternoon activity logged (lunch break pattern)';
+            else if (hour >= 17 && hour < 21) timeContext = ' - Evening patterns recorded (after work/school)';
+            else timeContext = ' - Night owl behavior confirmed (entertainment seeking)';
+            
+            const behaviorData = {
+                currentTime: now.toLocaleTimeString(),
+                visitDate: now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                dayOfWeek: now.toLocaleDateString('en-US', { weekday: 'long' }),
+                timestamp: now.getTime()
+            };
+            
+            // Network information
+            let networkInfo = '';
+            if (navigator.connection || navigator.mozConnection || navigator.webkitConnection) {
+                const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                const effectiveType = connection.effectiveType || 'unknown';
+                const downlink = connection.downlink ? `${connection.downlink}Mbps` : 'unknown';
+                const rtt = connection.rtt ? `${connection.rtt}ms RTT` : '';
+                const saveData = connection.saveData ? 'Data Saver ON' : 'Data Saver OFF';
+                
+                networkInfo = `<br>Network: ${effectiveType.toUpperCase()} | Download: ${downlink} | ${rtt} | ${saveData}`;
+                behaviorData.network = { effectiveType, downlink, rtt: connection.rtt, saveData };
+            }
+            
+            const displayText = `🕐 <strong>Temporal & Behavioral Data:</strong> ${behaviorData.dayOfWeek}, ${behaviorData.visitDate}<br>
+                                <span style="color: #888; font-size: 0.9em;">Access time: ${behaviorData.currentTime}${timeContext}${networkInfo}<br>
+                                Session ID generated and tracking initiated</span>`;
+            
+            feedToMonster('behavior', behaviorData, displayText);
+        }
+
+        function collectStoredData() {
+            // Cookie analizi
+            const cookies = document.cookie.split(';').filter(c => c.trim());
+            const cookieCount = cookies.length;
+            
+            // LocalStorage analizi
+            const localStorageSize = Object.keys(localStorage).length;
+            let localStorageData = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                localStorageData.push(key);
+            }
+            
+            // SessionStorage analizi
+            const sessionStorageSize = Object.keys(sessionStorage).length;
+            
+            // IndexedDB kontrolü
+            const hasIndexedDB = 'indexedDB' in window;
+            
+            // Visit tracking
+            const hasVisited = localStorage.getItem('visited') === 'true';
+            const lastVisit = localStorage.getItem('lastVisit');
+            
+            let visitInfo = 'First-time visitor - Creating tracking profile';
+            if (hasVisited && lastVisit) {
+                const lastDate = new Date(lastVisit);
+                const daysSince = Math.floor((Date.now() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+                const hoursSince = Math.floor((Date.now() - lastDate.getTime()) / (1000 * 60 * 60));
+                
+                if (daysSince === 0 && hoursSince < 1) {
+                    visitInfo = `Returning user (last visit: ${Math.floor((Date.now() - lastDate.getTime()) / (1000 * 60))} minutes ago)`;
+                } else if (daysSince === 0) {
+                    visitInfo = `Returning user (last visit: ${hoursSince} hours ago)`;
+                } else {
+                    visitInfo = `Returning user (last visit: ${daysSince} days ago)`;
+                }
+            }
+            
+            // Cross-site tracking simulation
+            const thirdPartyCookies = Math.floor(Math.random() * 30) + 20;
+            
+            localStorage.setItem('visited', 'true');
+            localStorage.setItem('lastVisit', new Date().toISOString());
+            localStorage.setItem('sessionCount', (parseInt(localStorage.getItem('sessionCount') || '0') + 1).toString());
+            
+            const storedData = {
+                cookies: cookieCount,
+                localStorage: localStorageSize,
+                sessionStorage: sessionStorageSize,
+                indexedDB: hasIndexedDB,
+                visitInfo: visitInfo,
+                thirdPartyCookies: thirdPartyCookies
+            };
+            
+            const displayText = `💾 <strong>Stored & Tracking Data:</strong> ${cookieCount} first-party cookies<br>
+                                <span style="color: #888; font-size: 0.9em;">${visitInfo}<br>
+                                LocalStorage: ${localStorageSize} items | SessionStorage: ${sessionStorageSize} items<br>
+                                <span style="color: #f00;">Estimated ${thirdPartyCookies} third-party trackers across sites</span></span>`;
+            
+            feedToMonster('stored', storedData, displayText);
+        }
+
+        function collectBatteryData() {
+            if (navigator.getBattery) {
+                navigator.getBattery().then(battery => {
+                    const batteryLevel = Math.round(battery.level * 100);
+                    const chargingStatus = battery.charging ? 'Charging' : 'Discharging';
+                    const chargingTime = battery.chargingTime !== Infinity ? 
+                        `${Math.round(battery.chargingTime / 60)} min to full charge` : 
+                        'Not charging';
+                    const dischargingTime = battery.dischargingTime !== Infinity ? 
+                        `${Math.round(battery.dischargingTime / 3600)} hours remaining` : 
+                        'Plugged in';
+                    
+                    const batteryData = {
+                        level: batteryLevel,
+                        charging: battery.charging,
+                        chargingTime: battery.chargingTime,
+                        dischargingTime: battery.dischargingTime
+                    };
+                    
+                    // Sensor bilgileri
+                    let sensorInfo = '';
+                    
+                    // Orientation API
+                    if ('DeviceOrientationEvent' in window) {
+                        sensorInfo += '<br>Device Orientation Sensor: ACCESSIBLE';
+                    }
+                    
+                    // Motion API
+                    if ('DeviceMotionEvent' in window) {
+                        sensorInfo += '<br>Accelerometer & Gyroscope: ACCESSIBLE';
+                    }
+                    
+                    // Ambient Light
+                    if ('AmbientLightSensor' in window) {
+                        sensorInfo += '<br>Ambient Light Sensor: ACCESSIBLE';
+                    }
+                    
+                    // Vibration API
+                    if ('vibrate' in navigator) {
+                        sensorInfo += '<br>Vibration API: ACCESSIBLE';
+                    }
+                    
+                    const displayText = `🔋 <strong>Battery & Hardware Sensors:</strong> ${batteryLevel}% (${chargingStatus})<br>
+                                        <span style="color: #888; font-size: 0.9em;">${battery.charging ? chargingTime : dischargingTime}${sensorInfo}<br>
+                                        <span style="color: #f90;">⚠️ Battery status used for device fingerprinting</span></span>`;
+                    
+                    feedToMonster('battery', batteryData, displayText);
+                });
+            } else {
+                // Battery API desteklenmiyor ama diğer sensörleri kontrol et
+                let sensorInfo = 'Battery API: Not supported';
+                
+                if ('DeviceOrientationEvent' in window) {
+                    sensorInfo += '<br>Device Orientation: ACCESSIBLE';
+                }
+                
+                if ('DeviceMotionEvent' in window) {
+                    sensorInfo += '<br>Motion Sensors: ACCESSIBLE';
+                }
+                
+                if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+                    navigator.mediaDevices.enumerateDevices().then(devices => {
+                        const audioInputs = devices.filter(d => d.kind === 'audioinput').length;
+                        const videoInputs = devices.filter(d => d.kind === 'videoinput').length;
+                        const audioOutputs = devices.filter(d => d.kind === 'audiooutput').length;
+                        
+                        sensorInfo += `<br>Media Devices: ${videoInputs} cameras, ${audioInputs} microphones, ${audioOutputs} speakers`;
+                        
+                        const displayText = `🔋 <strong>Hardware Sensors & Media:</strong> Battery API not supported<br>
+                                            <span style="color: #888; font-size: 0.9em;">${sensorInfo}</span>`;
+                        feedToMonster('battery', { supported: false, sensorInfo }, displayText);
+                    });
+                } else {
+                    const displayText = `🔋 <strong>Hardware Sensors:</strong> ${sensorInfo}<br>
+                                        <span style="color: #888; font-size: 0.9em;">Using alternative device metrics for fingerprinting</span>`;
+                    feedToMonster('battery', { supported: false }, displayText);
+                }
+            }
+        }
+
+        function animateProgressBar() {
+            let progress = 0;
+            const fillElement = document.getElementById('dataFill');
+            
+            const interval = setInterval(() => {
+                progress += 2;
+                fillElement.style.width = progress + '%';
+                fillElement.textContent = progress < 100 ? 'Extracting...' : 'Complete';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        nextStage(4);
+                    }, 1500);
+                }
+            }, 80);
+        }
+
+        function showDataSummary() {
+            animateCounter('dataPoints', dataPointsCount);
+            animateCounter('companiesBox', companiesCount, 'Companies');
+            
+            // Calculate user data worth (average $240/year per user)
+            const userWorth = Math.floor(Math.random() * 100) + 180; // $180-280
+            animateCounterCurrency('userValue', userWorth);
+            
+            const trackerCount = Math.floor(Math.random() * 30) + 60;
+            document.getElementById('trackersCount').textContent = `📡 ${trackerCount} TRACKERS`;
+            document.getElementById('partnersCount').textContent = `💰 SOLD TO ${companiesCount * 5} PARTNERS`;
+            
+            // Comparison stats
+            document.getElementById('yourDataPoints').textContent = dataPointsCount;
+            const averageUser = 342;
+            const percentile = Math.min(Math.floor((dataPointsCount / averageUser) * 64), 99);
+            document.getElementById('trackablePercent').innerHTML = 
+                `You're more trackable than <span style="color: #f00; font-weight: bold;">${percentile}%</span> of users`;
+            
+            const summaryList = document.getElementById('consumedDataSummary');
+            summaryList.innerHTML = '';
+            
+            const summaryItems = [
+                '🎯 Your precise location and movement patterns',
+                '🎯 Complete device fingerprint and specifications',
+                '🎯 Browsing habits and session duration',
+                '🎯 Previous visits and behavior history',
+                '🎯 Battery status and device health metrics',
+                '🎯 Network information and connection type',
+                '🎯 Time zone and daily routine indicators',
+                '🎯 Language preferences and regional settings'
+            ];
+            
+            summaryItems.forEach((item, index) => {
+                setTimeout(() => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    li.style.animation = 'slideInLeft 0.5s ease';
+                    summaryList.appendChild(li);
+                }, index * 200);
+            });
+        }
+
+        function animateCounter(elementId, targetValue, label = null) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            const numberElement = label ? element.querySelector('.stat-number') : element;
+            const duration = 2000;
+            const increment = targetValue / (duration / 16);
+            let current = 0;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= targetValue) {
+                    current = targetValue;
+                    clearInterval(timer);
+                }
+                numberElement.textContent = Math.floor(current).toLocaleString();
+            }, 16);
+        }
+
+        function animateCounterCurrency(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            const duration = 2000;
+            const increment = targetValue / (duration / 16);
+            let current = 0;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= targetValue) {
+                    current = targetValue;
+                    clearInterval(timer);
+                }
+                element.textContent = '$' + Math.floor(current).toLocaleString();
+            }, 16);
+        }
+
+        function restartExperience() {
+            // Tüm değişkenleri sıfırla
+            currentStage = 0;
+            dataPointsCount = 0;
+            companiesCount = 0;
+            clickCount = 0;
+            monsterScale = 1;
+            
+            // Data listesini temizle
+            const dataList = document.getElementById('dataList');
+            if (dataList) dataList.innerHTML = '';
+            
+            // Progress bar'ı sıfırla
+            const dataFill = document.getElementById('dataFill');
+            if (dataFill) {
+                dataFill.style.width = '0%';
+                dataFill.textContent = 'Extracting...';
+            }
+            
+            // Başa dön
+            nextStage(0);
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Ses efekti
+            playClickSound();
+        }
+
+        window.addEventListener('load', () => {
+            // Remove loading screen
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+            }, 2000);
+
+            console.log('%c⚠️ THE DATA EATER ⚠️', 'color: #f0f; font-size: 24px; font-weight: bold;');
+            console.log('%cClick the monster to feed it!', 'color: #0ff; font-size: 14px;');
+            console.log('%c', 'font-size: 1px; padding: 100px 100px; background: url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ctext y=\'50\' font-size=\'50\'%3E👁️%3C/text%3E%3C/svg%3E") no-repeat;');
+            console.log('%cEven the console is watching you...', 'color: #f00; font-size: 12px;');
+        });
+    </script>
+</body>
+</html>
